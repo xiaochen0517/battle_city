@@ -13,8 +13,10 @@ export class BaseTank {
     positionY;
     hp;
     direction; // 朝向
-    moveSpeed = 50; // 移速
+    moveSpeed = 2; // 移速
     tankPngType = null // 坦克外形
+    moveTimer = null;
+    tankImage;
     constructor(tankCanvasContext, x = 0, y = 0, d = 'top', tankPngType = tankPng) {
         this.tankCanvasContext = tankCanvasContext;
         this.positionX = x;
@@ -24,27 +26,60 @@ export class BaseTank {
     }
     // 绘制自身坦克
     drawTank() {
-        const image = new Image(75, 75);
-        image.onload = () => {
-            this.tankCanvasContext.drawImage(image, this.positionX, this.positionY, 75, 75);
+        this.tankImage = new Image(75, 75);
+        this.tankImage.onload = () => {
+            this.tankCanvasContext.drawImage(this.tankImage, this.positionX, this.positionY, 75, 75);
         };
-        image.src = tankPng;
+        this.tankImage.src = tankPng;
     }
+
     leftMove() {
-        this.direction = "LEFT"
-        this.positionX -= this.moveSpeed;
+        if (this.moveTimer != null) {
+            clearInterval(this.moveTimer);
+        }
+        this.moveTimer = setInterval(() => {
+            console.log("left", this.positionX);
+            this.tankCanvasContext.clearRect(this.positionX, this.positionY, 75, 75);
+            this.direction = "LEFT"
+            this.positionX -= this.moveSpeed;
+            this.tankCanvasContext.drawImage(this.tankImage, this.positionX, this.positionY, 75, 75);
+        }, 10);
     }
+
     rightMove() {
-        this.direction = "RIGHT"
-        this.positionX += this.moveSpeed;
+        if (this.moveTimer != null) {
+            clearInterval(this.moveTimer);
+        }
+        this.moveTimer = setInterval(() => {
+            this.tankCanvasContext.clearRect(this.positionX, this.positionY, 75, 75);
+            this.direction = "RIGHT"
+            this.positionX += this.moveSpeed;
+            this.tankCanvasContext.drawImage(this.tankImage, this.positionX, this.positionY, 75, 75);
+        }, 10);
     }
+
     topMove() {
-        this.direction = "TOP"
-        this.positionY -= this.moveSpeed;
+        if (this.moveTimer != null) {
+            clearInterval(this.moveTimer);
+        }
+        this.moveTimer = setInterval(() => {
+            this.tankCanvasContext.clearRect(this.positionX, this.positionY, 75, 75);
+            this.direction = "TOP"
+            this.positionY -= this.moveSpeed;
+            this.tankCanvasContext.drawImage(this.tankImage, this.positionX, this.positionY, 75, 75);
+        }, 10);
     }
+
     bottomMove() {
-        this.direction = "BOTTOM"
-        this.positionY += this.moveSpeed;
+        if (this.moveTimer != null) {
+            clearInterval(this.moveTimer);
+        }
+        this.moveTimer = setInterval(() => {
+            this.tankCanvasContext.clearRect(this.positionX, this.positionY, 75, 75);
+            this.direction = "BOTTOM"
+            this.positionY += this.moveSpeed;
+            this.tankCanvasContext.drawImage(this.tankImage, this.positionX, this.positionY, 75, 75);
+        }, 10);
     }
 }
 
@@ -53,25 +88,62 @@ export class Play1Tank extends BaseTank {
     constructor(tankCanvasContext, x = 0, y = 0, d = 'top') {
         super(tankCanvasContext, x, y, d)
         let _this = this
-        document.addEventListener('keydown', (e) => { this.setAction(e, _this) })
+        document.addEventListener('keydown', (e) => {
+            this.setKeyDownAction(e, _this)
+        })
+        document.addEventListener('keyup', (e) => {
+            this.setKeyUpAction(e, _this)
+        })
     }
-    setAction(e, _this) {
+
+    setKeyDownAction(e, _this) {
         switch (e.keyCode) {
             // 左
             case 37:
                 _this.leftMove()
                 break;
-            // 右
+                // 右
             case 39:
                 _this.rightMove()
                 break;
-            // 上
+                // 上
             case 38:
                 _this.topMove()
                 break;
-            // 下
+                // 下
             case 40:
                 _this.bottomMove()
+                break;
+            default:
+                break;
+        }
+    }
+
+    setKeyUpAction(e, _this) {
+        switch (e.keyCode) {
+            // 左
+            case 37:
+                if (_this.direction == "LEFT") {
+                    clearInterval(_this.moveTimer);
+                }
+                break;
+                // 右
+            case 39:
+                if (_this.direction == "RIGHT") {
+                    clearInterval(_this.moveTimer);
+                }
+                break;
+                // 上
+            case 38:
+                if (_this.direction == "TOP") {
+                    clearInterval(_this.moveTimer);
+                }
+                break;
+                // 下
+            case 40:
+                if (_this.direction == "BOTTOM") {
+                    clearInterval(_this.moveTimer);
+                }
                 break;
             default:
                 break;
