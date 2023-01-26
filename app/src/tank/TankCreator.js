@@ -1,22 +1,23 @@
 import CanvasUtil from "../utils/CanvasUtil";
-import tankPng from "../assert/images/tank.png";
+import { Play1Tank } from './Tank.js'
 
 export default class TankCreator {
     mapCanvas;
     canvasWidth = 1275;
     canvasHeight = 900;
+    tankList = []
     constructor(id) {
         this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "tank_canvas_id", this.canvasWidth, this.canvasHeight);
+        this.addTank()
+    }
+    addTank() {
+        let play1 = new Play1Tank(this.mapCanvas, 4 * 75, 11 * 75, 'top')
+        this.tankList.push(play1)
+    }
+    drawTanksCanvas() {
+        
+        this.tankList.forEach(t => t.drawTank())
     }
 
-    init() {
-        this.mapCanvas.fillStyle = "#000";
-        this.mapCanvas.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
 
-        const image = new Image(75, 75);
-        image.onload = () => {
-            this.mapCanvas.drawImage(image, 75 * 4, 75 * 11, 75, 75);
-        };
-        image.src = tankPng;
-    }
 }
