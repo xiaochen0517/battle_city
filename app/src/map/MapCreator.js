@@ -9,25 +9,25 @@ import walls from "@/assert/map/walls.gif";
 import water from "@/assert/map/water.gif";
 
 let loadImages = [{
-        key: "grassImage",
-        value: grass
-    },
-    {
-        key: "steelsImage",
-        value: steels
-    },
-    {
-        key: "symbolImage",
-        value: symbol
-    },
-    {
-        key: "wallsImage",
-        value: walls
-    },
-    {
-        key: "waterImage",
-        value: water
-    }
+    key: "grassImage",
+    value: grass
+},
+{
+    key: "steelsImage",
+    value: steels
+},
+{
+    key: "symbolImage",
+    value: symbol
+},
+{
+    key: "wallsImage",
+    value: walls
+},
+{
+    key: "waterImage",
+    value: water
+}
 ]
 
 export default class MapCreator {
@@ -36,6 +36,7 @@ export default class MapCreator {
     canvasHeight = 900;
     constructor(id) {
         this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
+        
         this.loadMapImages()
     }
     loadMapImages() {
@@ -81,7 +82,7 @@ export default class MapCreator {
         0, 0, 0, 0, 0, 4, 3, 4, 0, 0, 0, 0, 0, 0
     ]
 
-    init() {
+    drawMapCanvas() {
         this.hook.callAsync(() => {
             console.log('map is load end')
 

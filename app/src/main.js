@@ -2,7 +2,8 @@ import './index.less'
 import MapCreator from "./map/MapCreator";
 import TankCreator from './tank/TankCreator';
 
+
 let tankCreator = new TankCreator("myearcher");
-tankCreator.init();
+tankCreator.drawTanksCanvas();
 let mapCreator = new MapCreator("myearcher");
-mapCreator.init();
+mapCreator.drawMapCanvas();
