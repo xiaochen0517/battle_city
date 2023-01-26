@@ -1,3 +1,4 @@
 import MapCreator from "./map/MapCreator";
 
-let a = new MapCreator("myearcher");
+let mapCreator = new MapCreator("myearcher");
+mapCreator.test();
