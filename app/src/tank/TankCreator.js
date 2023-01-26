@@ -9,10 +9,13 @@ export default class TankCreator {
         this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "tank_canvas_id", this.canvasWidth, this.canvasHeight);
     }
 
-    test() {
+    init() {
+        this.mapCanvas.fillStyle = "#000";
+        this.mapCanvas.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
+
         const image = new Image(75, 75);
         image.onload = () => {
-            this.mapCanvas.drawImage(image, 0, 0, 75, 75);
+            this.mapCanvas.drawImage(image, 75 * 4, 75 * 11, 75, 75);
         };
         image.src = tankPng;
     }

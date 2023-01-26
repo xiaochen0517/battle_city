@@ -1,4 +1,6 @@
-import { AsyncParallelHook } from "tapable";
+import {
+    AsyncParallelHook
+} from "tapable";
 import CanvasUtil from "../utils/CanvasUtil";
 import grass from "@/assert/map/grass.gif";
 import steels from "@/assert/map/steels.gif";
@@ -6,12 +8,26 @@ import symbol from "@/assert/map/symbol.gif";
 import walls from "@/assert/map/walls.gif";
 import water from "@/assert/map/water.gif";
 
-let loadImages = [
-    { key: "grassImage", value: grass },
-    { key: "steelsImage", value: steels },
-    { key: "symbolImage", value: symbol },
-    { key: "wallsImage", value: walls },
-    { key: "waterImage", value: water }
+let loadImages = [{
+        key: "grassImage",
+        value: grass
+    },
+    {
+        key: "steelsImage",
+        value: steels
+    },
+    {
+        key: "symbolImage",
+        value: symbol
+    },
+    {
+        key: "wallsImage",
+        value: walls
+    },
+    {
+        key: "waterImage",
+        value: water
+    }
 ]
 
 export default class MapCreator {
@@ -37,10 +53,6 @@ export default class MapCreator {
                 })
             })
         })
-        // this.hook.callAsync(() => {
-        //     console.log('map is load end')
-        // })
-
     }
     /**
      * 0
@@ -54,31 +66,27 @@ export default class MapCreator {
      * 8
      * 9
      */
-    map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    map = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 1, 4, 4, 4, 0, 4, 4, 4, 0, 4, 4, 4, 0,
+        1, 1, 4, 0, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0,
+        1, 1, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+        2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 4, 3, 4, 0, 0, 0, 0, 0, 0
     ]
 
-    test() {
+    init() {
         this.hook.callAsync(() => {
             console.log('map is load end')
-            this.mapCanvas.fillStyle = "#000";
-            this.mapCanvas.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
-            this.mapCanvas.strokeStyle = "#fff";
-            this.mapCanvas.moveTo(975, 0);
-            this.mapCanvas.lineTo(975, 900);
-            this.mapCanvas.stroke();
 
-            for (let index = 1; index < 13; index++) {
+            this.mapCanvas.strokeStyle = "#fff";
+            for (let index = 1; index < 14; index++) {
                 this.mapCanvas.moveTo(75 * index, 0);
                 this.mapCanvas.lineTo(75 * index, 900);
                 this.mapCanvas.stroke();
