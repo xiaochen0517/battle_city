@@ -37,9 +37,9 @@ export default class MapCreator {
                 })
             })
         })
-        this.hook.callAsync(() => {
-            console.log('map is load end')
-        })
+        // this.hook.callAsync(() => {
+        //     console.log('map is load end')
+        // })
 
     }
     /**
@@ -69,47 +69,50 @@ export default class MapCreator {
     ]
 
     test() {
-        this.mapCanvas.fillStyle = "#000";
-        this.mapCanvas.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
-        this.mapCanvas.strokeStyle = "#fff";
-        this.mapCanvas.moveTo(975, 0);
-        this.mapCanvas.lineTo(975, 900);
-        this.mapCanvas.stroke();
-
-        for (let index = 1; index < 13; index++) {
-            this.mapCanvas.moveTo(75 * index, 0);
-            this.mapCanvas.lineTo(75 * index, 900);
+        this.hook.callAsync(() => {
+            console.log('map is load end')
+            this.mapCanvas.fillStyle = "#000";
+            this.mapCanvas.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
+            this.mapCanvas.strokeStyle = "#fff";
+            this.mapCanvas.moveTo(975, 0);
+            this.mapCanvas.lineTo(975, 900);
             this.mapCanvas.stroke();
-        }
 
-        for (let index = 1; index < 12; index++) {
-            this.mapCanvas.moveTo(0, 75 * index);
-            this.mapCanvas.lineTo(975, 75 * index);
-            this.mapCanvas.stroke();
-        }
+            for (let index = 1; index < 13; index++) {
+                this.mapCanvas.moveTo(75 * index, 0);
+                this.mapCanvas.lineTo(75 * index, 900);
+                this.mapCanvas.stroke();
+            }
 
-        for (let heightIndex = 0; heightIndex < 12; heightIndex++) {
-            for (let widthIndex = 0; widthIndex < 13; widthIndex++) {
-                let mapItem = this.map[heightIndex * 14 + widthIndex];
-                switch (mapItem) {
-                    case 1:
-                        this.mapCanvas.drawImage(this.grassImage, widthIndex * 75, heightIndex * 75, 75, 75);
-                        break;
-                    case 2:
-                        this.mapCanvas.drawImage(this.steelsImage, widthIndex * 75, heightIndex * 75, 75, 75);
-                        break;
-                    case 3:
-                        this.mapCanvas.drawImage(this.symbolImage, widthIndex * 75, heightIndex * 75, 75, 75);
-                        break;
-                    case 4:
-                        this.mapCanvas.drawImage(this.wallsImage, widthIndex * 75, heightIndex * 75, 75, 75);
-                        break;
-                    case 5:
-                        this.mapCanvas.drawImage(this.waterImage, widthIndex * 75, heightIndex * 75, 75, 75);
-                        break;
+            for (let index = 1; index < 12; index++) {
+                this.mapCanvas.moveTo(0, 75 * index);
+                this.mapCanvas.lineTo(975, 75 * index);
+                this.mapCanvas.stroke();
+            }
+
+            for (let heightIndex = 0; heightIndex < 12; heightIndex++) {
+                for (let widthIndex = 0; widthIndex < 13; widthIndex++) {
+                    let mapItem = this.map[heightIndex * 14 + widthIndex];
+                    switch (mapItem) {
+                        case 1:
+                            this.mapCanvas.drawImage(this.grassImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            break;
+                        case 2:
+                            this.mapCanvas.drawImage(this.steelsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            break;
+                        case 3:
+                            this.mapCanvas.drawImage(this.symbolImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            break;
+                        case 4:
+                            this.mapCanvas.drawImage(this.wallsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            break;
+                        case 5:
+                            this.mapCanvas.drawImage(this.waterImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            break;
+                    }
                 }
             }
-        }
+        })
     }
 
 }
