@@ -4,7 +4,7 @@ import TankCreator from './tank/TankCreator';
 
 
 let mapCreator = new MapCreator("myearcher");
-mapCreator.drawMapCanvas();
+mapCreator.init();
 let tankCreator = new TankCreator("myearcher");
 setInterval(() => {
     tankCreator.drawTanksCanvas();

@@ -32,41 +32,9 @@ let loadImages = [{
 ]
 
 export default class MapCreator {
-    mapCanvas;
-    canvasWidth = 1275;
-    canvasHeight = 900;
-    constructor(id) {
-        this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
-        
-        this.loadMapImages()
-    }
-    loadMapImages() {
-        this.hook = new AsyncParallelHook()
-        loadImages.forEach(imgItem => {
-            this.hook.tapPromise(imgItem.key, () => {
-                return new Promise((reslove, reject) => {
-                    let img = new Image(75, 75)
-                    img.onload = function () {
-                        reslove()
-                    }
-                    this[imgItem.key] = img
-                    this[imgItem.key].src = imgItem.value
 
-                })
-            })
-        })
-    }
     /**
-     * 0
-     * 1：草
-     * 2：铁墙
-     * 3：基地
-     * 4：砖墙
-     * 5：水
-     * 6
-     * 7
-     * 8
-     * 9
+     * 1：草 2：铁墙 3：基地 4：砖墙 5：水
      */
     map = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -78,10 +46,63 @@ export default class MapCreator {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 4, 3, 4, 0, 0, 0, 0, 0, 0
     ]
+
+    /**
+     * 1: %% 2: -- 3: -% 4: %- 5: %- 6: -% 7: -- 8: --
+     *    --    %%    -%    %-    --    --    %-    -%
+     */
+    mapDamage = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
+    canvasWidth = 1275;
+    canvasHeight = 900;
+    oneBoxSize = 75;
+    halfBoxSize = this.oneBoxSize/2;
+    mapCanvas;
+
+    /**
+     * 创建图层
+     * @param {*} id 
+     */
+    constructor(id) {
+        this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
+        this.loadMapImages()
+    }
+
+    /**
+     * 加载图片
+     */
+    loadMapImages() {
+        this.hook = new AsyncParallelHook()
+        loadImages.forEach(imgItem => {
+            this.hook.tapPromise(imgItem.key, () => {
+                return new Promise((reslove, reject) => {
+                    let img = new Image(75, 75)
+                    img.onload = function () {
+                        reslove()
+                    }
+                    this[imgItem.key] = img
+                    this[imgItem.key].src = imgItem.value
+                })
+            })
+        })
+    }
+
 
     init() {
         this.hook.callAsync(() => {
