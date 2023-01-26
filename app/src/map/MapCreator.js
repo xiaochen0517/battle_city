@@ -1,19 +1,100 @@
 import CanvasUtil from "../utils/CanvasUtil";
+import grass from "@/assert/map/grass.gif";
+import steels from "@/assert/map/steels.gif";
+import symbol from "@/assert/map/symbol.gif";
+import walls from "@/assert/map/walls.gif";
+import water from "@/assert/map/water.gif";
 
 export default class MapCreator {
     mapCanvas;
-    canvasWidth = 1000;
-    canvasHeight = 700;
+    canvasWidth = 1275;
+    canvasHeight = 900;
     constructor(id) {
         this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
+        this.grassImage = new Image(75, 75);
+        this.grassImage.src = grass;
+
+        this.steelsImage = new Image(75, 75);
+        this.steelsImage.src = steels;
+
+        this.symbolImage = new Image(75, 75);
+        this.symbolImage.src = symbol;
+
+        this.wallsImage = new Image(75, 75);
+        this.wallsImage.src = walls;
+
+        this.waterImage = new Image(75, 75);
+        this.waterImage.src = water;
     }
+
+    /**
+     * 0
+     * 1：草
+     * 2：铁墙
+     * 3：基地
+     * 4：砖墙
+     * 5：水
+     * 6
+     * 7
+     * 8
+     * 9
+     */
+    map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+    ]
 
     test() {
         this.mapCanvas.fillStyle = "#000";
         this.mapCanvas.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
         this.mapCanvas.strokeStyle = "#fff";
-        this.mapCanvas.moveTo(0, 0);
-        this.mapCanvas.lineTo(200, 100);
+        this.mapCanvas.moveTo(975, 0);
+        this.mapCanvas.lineTo(975, 900);
         this.mapCanvas.stroke();
+
+        for (let index = 1; index < 13; index++) {
+            this.mapCanvas.moveTo(75 * index, 0);
+            this.mapCanvas.lineTo(75 * index, 900);
+            this.mapCanvas.stroke();
+        }
+
+        for (let index = 1; index < 12; index++) {
+            this.mapCanvas.moveTo(0, 75 * index);
+            this.mapCanvas.lineTo(975, 75 * index);
+            this.mapCanvas.stroke();
+        }
+
+        for (let heightIndex = 0; heightIndex < 12; heightIndex++) {
+            for (let widthIndex = 0; widthIndex < 13; widthIndex++) {
+                let mapItem = this.map[heightIndex * 14 + widthIndex];
+                switch (mapItem) {
+                    case 1:
+                        this.mapCanvas.drawImage(this.grassImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                        break;
+                    case 2:
+                        this.mapCanvas.drawImage(this.steelsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                        break;
+                    case 3:
+                        this.mapCanvas.drawImage(this.symbolImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                        break;
+                    case 4:
+                        this.mapCanvas.drawImage(this.wallsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                        break;
+                    case 5:
+                        this.mapCanvas.drawImage(this.waterImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                        break;
+                }
+            }
+        }
     }
+
 }
