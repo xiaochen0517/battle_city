@@ -1,3 +1,4 @@
+import { AsyncParallelHook } from "tapable";
 import CanvasUtil from "../utils/CanvasUtil";
 import grass from "@/assert/map/grass.gif";
 import steels from "@/assert/map/steels.gif";
@@ -5,28 +6,42 @@ import symbol from "@/assert/map/symbol.gif";
 import walls from "@/assert/map/walls.gif";
 import water from "@/assert/map/water.gif";
 
+let loadImages = [
+    { key: "grassImage", value: grass },
+    { key: "steelsImage", value: steels },
+    { key: "symbolImage", value: symbol },
+    { key: "wallsImage", value: walls },
+    { key: "waterImage", value: water }
+]
+
 export default class MapCreator {
     mapCanvas;
     canvasWidth = 1275;
     canvasHeight = 900;
     constructor(id) {
         this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
-        this.grassImage = new Image(75, 75);
-        this.grassImage.src = grass;
-
-        this.steelsImage = new Image(75, 75);
-        this.steelsImage.src = steels;
-
-        this.symbolImage = new Image(75, 75);
-        this.symbolImage.src = symbol;
-
-        this.wallsImage = new Image(75, 75);
-        this.wallsImage.src = walls;
-
-        this.waterImage = new Image(75, 75);
-        this.waterImage.src = water;
+        this.loadMapImages()
     }
+    loadMapImages() {
+        this.hook = new AsyncParallelHook()
+        loadImages.forEach(imgItem => {
+            this.hook.tapPromise(imgItem.key, () => {
+                return new Promise((reslove, reject) => {
+                    let img = new Image(75, 75)
+                    img.onload = function () {
+                        reslove()
+                    }
+                    this[imgItem.key] = img
+                    this[imgItem.key].src = imgItem.value
 
+                })
+            })
+        })
+        this.hook.callAsync(() => {
+            console.log('map is load end')
+        })
+
+    }
     /**
      * 0
      * 1：草
