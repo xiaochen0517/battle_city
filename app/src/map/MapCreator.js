@@ -2,15 +2,16 @@ import {
     AsyncParallelHook
 } from "tapable";
 import CanvasUtil from "../utils/CanvasUtil";
+// 地图图片资源
 import grass from "@/assert/map/grass.gif";
 import steels from "@/assert/map/steels.gif";
 import symbol from "@/assert/map/symbol.gif";
 import walls from "@/assert/map/walls.gif";
 import water from "@/assert/map/water.gif";
-
+// 地图加载使用
 let loadImages = [{
         key: "grassImage",
-        value: grass
+        value: grass,
     },
     {
         key: "steelsImage",
@@ -31,40 +32,9 @@ let loadImages = [{
 ]
 
 export default class MapCreator {
-    mapCanvas;
-    canvasWidth = 1275;
-    canvasHeight = 900;
-    constructor(id) {
-        this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
-        this.loadMapImages()
-    }
-    loadMapImages() {
-        this.hook = new AsyncParallelHook()
-        loadImages.forEach(imgItem => {
-            this.hook.tapPromise(imgItem.key, () => {
-                return new Promise((reslove, reject) => {
-                    let img = new Image(75, 75)
-                    img.onload = function () {
-                        reslove()
-                    }
-                    this[imgItem.key] = img
-                    this[imgItem.key].src = imgItem.value
 
-                })
-            })
-        })
-    }
     /**
-     * 0
-     * 1：草
-     * 2：铁墙
-     * 3：基地
-     * 4：砖墙
-     * 5：水
-     * 6
-     * 7
-     * 8
-     * 9
+     * 1：草 2：铁墙 3：基地 4：砖墙 5：水
      */
     map = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -76,10 +46,63 @@ export default class MapCreator {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 4, 3, 4, 0, 0, 0, 0, 0, 0
     ]
+
+    /**
+     * 1: %% 2: -- 3: -% 4: %- 5: %- 6: -% 7: -- 8: --
+     *    --    %%    -%    %-    --    --    %-    -%
+     */
+    mapDamage = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
+    canvasWidth = 1275;
+    canvasHeight = 900;
+    oneBoxSize = 75;
+    halfBoxSize = this.oneBoxSize/2;
+    mapCanvas;
+
+    /**
+     * 创建图层
+     * @param {*} id 
+     */
+    constructor(id) {
+        this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
+        this.loadMapImages()
+    }
+
+    /**
+     * 加载图片
+     */
+    loadMapImages() {
+        this.hook = new AsyncParallelHook()
+        loadImages.forEach(imgItem => {
+            this.hook.tapPromise(imgItem.key, () => {
+                return new Promise((reslove, reject) => {
+                    let img = new Image(75, 75)
+                    img.onload = function () {
+                        reslove()
+                    }
+                    this[imgItem.key] = img
+                    this[imgItem.key].src = imgItem.value
+                })
+            })
+        })
+    }
+
 
     init() {
         this.hook.callAsync(() => {
@@ -112,7 +135,12 @@ export default class MapCreator {
                             this.mapCanvas.drawImage(this.symbolImage, widthIndex * 75, heightIndex * 75, 75, 75);
                             break;
                         case 4:
-                            this.mapCanvas.drawImage(this.wallsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            let mapDamageItem = this.mapDamage[heightIndex * 14 + widthIndex];
+                            if (mapDamageItem != 0) {
+                                this.setDamageWalls(mapDamageItem, widthIndex, heightIndex);
+                            } else {
+                                this.mapCanvas.drawImage(this.wallsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            }
                             break;
                         case 5:
                             this.mapCanvas.drawImage(this.waterImage, widthIndex * 75, heightIndex * 75, 75, 75);
@@ -121,6 +149,39 @@ export default class MapCreator {
                 }
             }
         })
+    }
+
+    setDamageWalls(mapDamageItem, widthIndex, heightIndex) {
+        let drawWidth = widthIndex * this.oneBoxSize;
+        let drawHeight = heightIndex * this.oneBoxSize;
+        let drawHalfWidth = drawWidth + this.halfBoxSize;
+        let drawHalfHeight = drawHeight + this.halfBoxSize;
+        switch (mapDamageItem) {
+            case 1:
+                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 60, 30, drawWidth, drawHeight, this.oneBoxSize, this.halfBoxSize);
+                break;
+            case 2:
+                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 60, 30, drawWidth, drawHalfHeight, this.oneBoxSize, this.halfBoxSize);
+                break;
+            case 3:
+                this.mapCanvas.drawImage(this.wallsImage, 30, 0, 30, 60, drawHalfWidth, drawHeight, this.halfBoxSize, this.oneBoxSize);
+                break;
+            case 4:
+                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 30, 60, drawWidth, drawHeight, this.halfBoxSize, this.oneBoxSize);
+                break;
+            case 5:
+                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 30, 30, drawWidth, drawHeight, this.halfBoxSize, this.halfBoxSize);
+                break;
+            case 6:
+                this.mapCanvas.drawImage(this.wallsImage, 30, 0, 30, 30, drawHalfWidth, drawHeight, this.halfBoxSize, this.halfBoxSize);
+                break;
+            case 7:
+                this.mapCanvas.drawImage(this.wallsImage, 0, 30, 30, 30, drawWidth, drawHalfHeight, this.halfBoxSize, this.halfBoxSize);
+                break;
+            case 8:
+                this.mapCanvas.drawImage(this.wallsImage, 30, 30, 30, 30, drawHalfWidth, drawHalfHeight, this.halfBoxSize, this.halfBoxSize);
+                break;
+        }
     }
 
 }
