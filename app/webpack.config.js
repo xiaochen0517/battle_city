@@ -7,7 +7,7 @@ module.exports = {
     target: "web",
     devtool: 'inline-source-map',
     entry: {
-        index: './src/main.ts',
+        index: './src/main.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -17,16 +17,6 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: /\.ts?$/i,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-            {
-                test: /\.tsx?$/i,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
@@ -38,10 +28,10 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.js'],
         alias: {
             '@': path.resolve(__dirname, './src'),
-            'src': path.resolve(__dirname, './src')
+            '@src': path.resolve(__dirname, './src')
         }
     },
     plugins: [
