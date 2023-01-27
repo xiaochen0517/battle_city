@@ -8,35 +8,38 @@ import steels from "@/assert/map/steels.gif";
 import symbol from "@/assert/map/symbol.gif";
 import walls from "@/assert/map/walls.gif";
 import water from "@/assert/map/water.gif";
-// 地图加载使用
-let loadImages = [{
-        key: "grassImage",
-        value: grass,
-    },
-    {
-        key: "steelsImage",
-        value: steels
-    },
-    {
-        key: "symbolImage",
-        value: symbol
-    },
-    {
-        key: "wallsImage",
-        value: walls
-    },
-    {
-        key: "waterImage",
-        value: water
-    }
-]
 
 export default class MapCreator {
 
     /**
+     * 图片加载使用
+     */
+    MAP_IMAGES = [{
+            key: "grassImage",
+            value: grass,
+        },
+        {
+            key: "steelsImage",
+            value: steels
+        },
+        {
+            key: "symbolImage",
+            value: symbol
+        },
+        {
+            key: "wallsImage",
+            value: walls
+        },
+        {
+            key: "waterImage",
+            value: water
+        }
+    ]
+
+    /**
      * 1：草 2：铁墙 3：基地 4：砖墙 5：水
      */
-    map = [
+    MAP_DATA = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 4, 4, 4, 0, 4, 4, 4, 0, 4, 4, 4, 0,
         1, 1, 4, 0, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0,
@@ -55,7 +58,7 @@ export default class MapCreator {
      * 1: %% 2: -- 3: -% 4: %- 5: %- 6: -% 7: -- 8: --
      *    --    %%    -%    %-    --    --    %-    -%
      */
-    mapDamage = [
+    MAP_DAMAGE_DATA = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -69,10 +72,10 @@ export default class MapCreator {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     ]
-    canvasWidth = 1275;
-    canvasHeight = 900;
-    oneBoxSize = 75;
-    halfBoxSize = this.oneBoxSize/2;
+    CANVAS_WIDTH = 1275;
+    CANVAS_HEIGHT = 900;
+    MAP_BLOCK_SIZE = 75;
+    MAP_BLOCK_HALF_SIZE = this.MAP_BLOCK_SIZE / 2;
     mapCanvas;
 
     /**
@@ -80,19 +83,19 @@ export default class MapCreator {
      * @param {*} id 
      */
     constructor(id) {
-        this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.canvasWidth, this.canvasHeight);
-        this.loadMapImages()
+        this.mapCanvas = CanvasUtil.creatorCanvasLayout(id, "map_canvas_id", this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+        this.loadMAP_IMAGES()
     }
 
     /**
      * 加载图片
      */
-    loadMapImages() {
+    loadMAP_IMAGES() {
         this.hook = new AsyncParallelHook()
-        loadImages.forEach(imgItem => {
+        this.MAP_IMAGES.forEach(imgItem => {
             this.hook.tapPromise(imgItem.key, () => {
                 return new Promise((reslove, reject) => {
-                    let img = new Image(75, 75)
+                    let img = new Image(this.MAP_BLOCK_SIZE, this.MAP_BLOCK_SIZE)
                     img.onload = function () {
                         reslove()
                     }
@@ -103,47 +106,36 @@ export default class MapCreator {
         })
     }
 
+    
+
 
     init() {
         this.hook.callAsync(() => {
-            console.log('map is load end')
-
-            this.mapCanvas.strokeStyle = "#fff";
-            for (let index = 1; index < 14; index++) {
-                this.mapCanvas.moveTo(75 * index, 0);
-                this.mapCanvas.lineTo(75 * index, 900);
-                this.mapCanvas.stroke();
-            }
-
-            for (let index = 1; index < 12; index++) {
-                this.mapCanvas.moveTo(0, 75 * index);
-                this.mapCanvas.lineTo(975, 75 * index);
-                this.mapCanvas.stroke();
-            }
-
             for (let heightIndex = 0; heightIndex < 12; heightIndex++) {
                 for (let widthIndex = 0; widthIndex < 13; widthIndex++) {
-                    let mapItem = this.map[heightIndex * 14 + widthIndex];
+                    let mapItem = this.MAP_DATA[heightIndex * 14 + widthIndex];
+                    let imageDrawPositionX = widthIndex * this.MAP_BLOCK_SIZE;
+                    let imageDrawPositionY = heightIndex * this.MAP_BLOCK_SIZE;
                     switch (mapItem) {
                         case 1:
-                            this.mapCanvas.drawImage(this.grassImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            this._drawMapOnCanvas(this.grassImage, imageDrawPositionX, imageDrawPositionY);
                             break;
                         case 2:
-                            this.mapCanvas.drawImage(this.steelsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            this._drawMapOnCanvas(this.steelsImage, imageDrawPositionX, imageDrawPositionY);
                             break;
                         case 3:
-                            this.mapCanvas.drawImage(this.symbolImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            this._drawMapOnCanvas(this.symbolImage, imageDrawPositionX, imageDrawPositionY);
                             break;
                         case 4:
-                            let mapDamageItem = this.mapDamage[heightIndex * 14 + widthIndex];
+                            let mapDamageItem = this.MAP_DAMAGE_DATA[heightIndex * 14 + widthIndex];
                             if (mapDamageItem != 0) {
-                                this.setDamageWalls(mapDamageItem, widthIndex, heightIndex);
+                                this.setDamageWalls(mapDamageItem, imageDrawPositionX, imageDrawPositionY);
                             } else {
-                                this.mapCanvas.drawImage(this.wallsImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                                this._drawMapOnCanvas(this.wallsImage, imageDrawPositionX, imageDrawPositionY);
                             }
                             break;
                         case 5:
-                            this.mapCanvas.drawImage(this.waterImage, widthIndex * 75, heightIndex * 75, 75, 75);
+                            this._drawMapOnCanvas(this.waterImage, imageDrawPositionX, imageDrawPositionY);
                             break;
                     }
                 }
@@ -151,37 +143,45 @@ export default class MapCreator {
         })
     }
 
-    setDamageWalls(mapDamageItem, widthIndex, heightIndex) {
-        let drawWidth = widthIndex * this.oneBoxSize;
-        let drawHeight = heightIndex * this.oneBoxSize;
-        let drawHalfWidth = drawWidth + this.halfBoxSize;
-        let drawHalfHeight = drawHeight + this.halfBoxSize;
+    _drawMapOnCanvas(image, positionX, positionY) {
+        this.mapCanvas.drawImage(image, positionX, positionY, this.MAP_BLOCK_SIZE, this.MAP_BLOCK_SIZE);
+    }
+
+    MAP_IMAGES_SIZE = 60;
+    MAP_IMAGES_HALF_SIZE = 30;
+
+    setDamageWalls(mapDamageItem, positionX, positionY) {
+        let halfPositionX = positionX + this.MAP_BLOCK_HALF_SIZE;
+        let halfPositionY = positionY + this.MAP_BLOCK_HALF_SIZE;
         switch (mapDamageItem) {
             case 1:
-                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 60, 30, drawWidth, drawHeight, this.oneBoxSize, this.halfBoxSize);
+                this._drawDamagedWalls(0, 0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, positionX, positionY);
                 break;
             case 2:
-                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 60, 30, drawWidth, drawHalfHeight, this.oneBoxSize, this.halfBoxSize);
+                this._drawDamagedWalls(0, 0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, positionX, halfPositionY);
                 break;
             case 3:
-                this.mapCanvas.drawImage(this.wallsImage, 30, 0, 30, 60, drawHalfWidth, drawHeight, this.halfBoxSize, this.oneBoxSize);
+                this._drawDamagedWalls(this.MAP_IMAGES_SIZE, 0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, halfPositionX, positionY);
                 break;
             case 4:
-                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 30, 60, drawWidth, drawHeight, this.halfBoxSize, this.oneBoxSize);
+                this._drawDamagedWalls(0, 0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, positionX, positionY);
                 break;
             case 5:
-                this.mapCanvas.drawImage(this.wallsImage, 0, 0, 30, 30, drawWidth, drawHeight, this.halfBoxSize, this.halfBoxSize);
+                this._drawDamagedWalls(0, 0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, positionX, positionY);
                 break;
             case 6:
-                this.mapCanvas.drawImage(this.wallsImage, 30, 0, 30, 30, drawHalfWidth, drawHeight, this.halfBoxSize, this.halfBoxSize);
+                this._drawDamagedWalls(this.MAP_IMAGES_SIZE, 0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, halfPositionX, positionY);
                 break;
             case 7:
-                this.mapCanvas.drawImage(this.wallsImage, 0, 30, 30, 30, drawWidth, drawHalfHeight, this.halfBoxSize, this.halfBoxSize);
+                this._drawDamagedWalls(0, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, positionX, halfPositionY);
                 break;
             case 8:
-                this.mapCanvas.drawImage(this.wallsImage, 30, 30, 30, 30, drawHalfWidth, drawHalfHeight, this.halfBoxSize, this.halfBoxSize);
+                this._drawDamagedWalls(this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, this.MAP_IMAGES_SIZE, halfPositionX, halfPositionY);
                 break;
         }
     }
 
+    _drawDamagedWalls(imageX, imageY, imageWidth, imageHeight, positionX, positionY) {
+        this.mapCanvas.drawImage(this.wallsImage, imageX, imageY, imageWidth, imageHeight, positionX, positionY, this.MAP_BLOCK_HALF_SIZE, this.MAP_BLOCK_HALF_SIZE);
+    }
 }

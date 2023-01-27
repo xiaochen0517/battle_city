@@ -5,5 +5,5 @@ import TankCreator from './tank/TankCreator';
 
 let tankCreator = new TankCreator("myearcher");
 tankCreator.drawTanksCanvas();
-let mapCreator = new MapCreator("myearcher");
-mapCreator.init();
+// let mapCreator = new MapCreator("myearcher");
+// mapCreator.init();
